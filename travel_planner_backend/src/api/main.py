@@ -18,10 +18,18 @@ def _get_cors_origins() -> list[str]:
     """
     Determine allowed CORS origins.
 
-    We default to local React dev server to match the product requirement.
+    Defaults are tuned for local development:
+    - React dev server: http://localhost:3000
+    - Some environments proxy UI through other localhost ports; allow common loopback variants.
     If REACT_APP_FRONTEND_URL is set, we allow that too for deployed environments.
     """
-    origins = {"http://localhost:3000"}
+    origins = {
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        # Allow local tools/proxies that might serve the UI from another port.
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    }
     env_origin = os.getenv("REACT_APP_FRONTEND_URL")
     if env_origin:
         origins.add(env_origin)
